@@ -14,6 +14,10 @@ type logger struct {
 	SourceField   string
 }
 
+func New() *logger{
+	return &logger{}
+}
+
 func (l *logger) LogMode(gormlogger.LogLevel) gormlogger.Interface {
 	return l
 }
