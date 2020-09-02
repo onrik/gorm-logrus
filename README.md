@@ -11,7 +11,7 @@ import (
 
 func main() {
   db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
-	  Logger: gorm_logrus.New(),
+    Logger: gorm_logrus.New(),
   })
   if err != nil {
     panic("failed to connect database")
