@@ -2,20 +2,25 @@ package gorm_logrus
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 )
 
 type logger struct {
-	SlowThreshold time.Duration
-	SourceField   string
+	SlowThreshold         time.Duration
+	SourceField           string
+	SkipErrRecordNotFound bool
 }
 
-func New() *logger{
-	return &logger{}
+func New() *logger {
+	return &logger{
+		SkipErrRecordNotFound: true,
+	}
 }
 
 func (l *logger) LogMode(gormlogger.LogLevel) gormlogger.Interface {
@@ -41,16 +46,16 @@ func (l *logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 	if l.SourceField != "" {
 		fields[l.SourceField] = utils.FileWithLineNum()
 	}
-	if err != nil {
+	if err != nil && !(errors.Is(err, gorm.ErrRecordNotFound) && l.SkipErrRecordNotFound) {
 		fields[log.ErrorKey] = err
 		log.WithFields(fields).Errorf("%s [%s]", sql, elapsed)
 		return
 	}
 
-	if l.SlowThreshold != 0  && elapsed > l.SlowThreshold {
+	if l.SlowThreshold != 0 && elapsed > l.SlowThreshold {
 		log.WithFields(fields).Warnf("%s [%s]", sql, elapsed)
 		return
 	}
-	
+
 	log.WithFields(fields).Debugf("%s [%s]", sql, elapsed)
 }
