@@ -1,4 +1,5 @@
 # gorm-logrus
+Logrus logger for gorm v2
 
 ```go
 package main
