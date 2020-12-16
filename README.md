@@ -5,6 +5,7 @@ Logrus logger for gorm v2
 package main
 
 import (
+  "github.com/sirupsen/logrus"
   "gorm.io/gorm"
   "gorm.io/driver/sqlite"
   "github.com/onrik/gorm-logrus"
@@ -12,10 +13,11 @@ import (
 
 func main() {
   db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
-    Logger: gorm_logrus.New(),
+    Logger: gorm_logrus.New(logrus.StandardLogger()),
   })
   if err != nil {
     panic("failed to connect database")
   }
 }
 ```
+
