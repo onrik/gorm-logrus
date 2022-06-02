@@ -15,11 +15,13 @@ type logger struct {
 	SlowThreshold         time.Duration
 	SourceField           string
 	SkipErrRecordNotFound bool
+	Debug                 bool
 }
 
 func New() *logger {
 	return &logger{
 		SkipErrRecordNotFound: true,
+		Debug:                 true,
 	}
 }
 
@@ -57,5 +59,7 @@ func (l *logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 		return
 	}
 
-	log.WithContext(ctx).WithFields(fields).Debugf("%s [%s]", sql, elapsed)
+	if l.Debug {
+		log.WithContext(ctx).WithFields(fields).Debugf("%s [%s]", sql, elapsed)
+	}
 }
